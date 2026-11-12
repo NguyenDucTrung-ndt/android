@@ -13,29 +13,25 @@ class TeamMember {
   final Bi role;
 }
 
-// TODO: Thay bằng thông tin thật của nhóm trước khi nộp.
 const String kClassCode = 'N0x';
 const String kTeamName = 'Nhóm ii';
-const String kGithubUrl =
-    'https://github.com/<tai-khoan>/2026_2027_1_1_LTTBDD_N0x_Nhom_ii';
+const String kGithubUrl = 'https://github.com/NguyenDucTrung-ndt/android';
 
 const List<TeamMember> kTeamMembers = [
   TeamMember(
-    name: 'Nguyễn Minh',
+    name: 'Nguyễn Minh Hưng',
     studentId: '<Mã sinh viên 1>',
-    role: Bi('Trưởng nhóm - Quản lý trạng thái, màn hình chi tiết',
-        'Team leader - State management, detail screens'),
+    role: Bi(
+      'Quản lý trạng thái, dữ liệu công thức đa quốc gia, chi tiết & chế độ nấu',
+      'State management, international recipes data, detail & cooking mode',
+    ),
   ),
   TeamMember(
-    name: '<Họ và tên thành viên 2>',
+    name: 'Nguyễn Đức Trung',
     studentId: '<Mã sinh viên 2>',
-    role: Bi('Giao diện trang chủ, tìm kiếm, đa ngôn ngữ',
-        'Home UI, search, localization'),
-  ),
-  TeamMember(
-    name: '<Họ và tên thành viên 3>',
-    studentId: '<Mã sinh viên 3>',
-    role: Bi('Biểu mẫu công thức, danh sách đi chợ, kiểm thử',
-        'Recipe form, shopping list, testing'),
+    role: Bi(
+      'Giao diện Mobile Web, Trang chủ, Tìm kiếm, Danh mục, Đi chợ, Cá nhân, Cài đặt & Kiểm thử',
+      'Mobile Web UI, Home, Search, Catalog, Shopping, Profile, Settings & Testing',
+    ),
   ),
 ];
