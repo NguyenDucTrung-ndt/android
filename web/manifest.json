@@ -1,11 +1,11 @@
 {
-    "name": "recipe_notebook",
-    "short_name": "recipe_notebook",
+    "name": "Sổ tay Nấu ăn - Recipe Notebook",
+    "short_name": "Sổ tay Nấu ăn",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#FFF8F5",
+    "theme_color": "#E65100",
+    "description": "Recipe Notebook - Ứng dụng Sổ tay Công thức Nấu ăn",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

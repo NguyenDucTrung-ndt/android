@@ -112,6 +112,8 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
             flexibleSpace: FlexibleSpaceBar(
               title: Text(
                 recipe.name.get(s.lang),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontSize: 18),
               ),
               background: Container(

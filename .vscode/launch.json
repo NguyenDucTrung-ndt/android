@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Recipe Notebook (Chrome Mobile Web)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "chrome",
+      "args": [
+        "--web-browser-flag=--window-size=412,915"
+      ]
+    },
+    {
+      "name": "Recipe Notebook (Web Server)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "web-server"
+    }
+  ]
+}
+

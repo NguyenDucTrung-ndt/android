@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -33,6 +35,7 @@ class _RecipeAppState extends State<RecipeApp> {
           return MaterialApp(
             title: S(state.lang).t('app_name'),
             debugShowCheckedModeBanner: false,
+            scrollBehavior: const _AppScrollBehavior(),
             locale: state.locale,
             supportedLocales: const [Locale('vi'), Locale('en')],
             localizationsDelegates: const [
@@ -60,4 +63,18 @@ ThemeData _buildTheme(Brightness brightness) {
     ),
     appBarTheme: const AppBarTheme(centerTitle: false),
   );
+}
+
+/// Hỗ trợ thao tác vuốt/kéo mượt bằng cả cảm ứng, trackpad và chuột trên trình duyệt.
+class _AppScrollBehavior extends MaterialScrollBehavior {
+  const _AppScrollBehavior();
+
+  @override
+  Set<PointerDeviceKind> get dragDevices => const {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+        PointerDeviceKind.trackpad,
+        PointerDeviceKind.stylus,
+        PointerDeviceKind.unknown,
+      };
 }

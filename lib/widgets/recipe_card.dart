@@ -128,9 +128,11 @@ class RecipeGridCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      MiniInfo(
-                        icon: Icons.timer_outlined,
-                        text: '${recipe.minutes} ${s.t('minutes_unit')}',
+                      Flexible(
+                        child: MiniInfo(
+                          icon: Icons.timer_outlined,
+                          text: '${recipe.minutes} ${s.t('minutes_unit')}',
+                        ),
                       ),
                       InkResponse(
                         onTap: () => state.toggleFavorite(recipe.id),

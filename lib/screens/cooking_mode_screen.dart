@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 import '../app_state.dart';
 import '../l10n/strings.dart';
+import '../utils/alert_sound.dart';
 
 /// Chế độ nấu: hiển thị từng bước (PageView) và đồng hồ hẹn giờ đếm ngược.
 class CookingModeScreen extends StatefulWidget {
@@ -72,8 +73,10 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
   }
 
   void _onTimerDone() {
+    if (!mounted) return;
     HapticFeedback.heavyImpact();
     SystemSound.play(SystemSoundType.alert);
+    playWebAlertSound();
     final s = S.of(context);
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
@@ -115,59 +118,50 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
         title: Text('${s.t('cooking_mode')} - ${recipe.name.get(s.lang)}'),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            LinearProgressIndicator(value: (_index + 1) / steps.length),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Text(
-                s.f('step_of', [_index + 1, steps.length]),
-                style: theme.textTheme.titleMedium,
-              ),
-            ),
-            Expanded(
-              child: PageView.builder(
-                controller: _pageCtrl,
-                itemCount: steps.length,
-                onPageChanged: (i) => setState(() => _index = i),
-                itemBuilder: (context, i) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Card(
-                    margin: EdgeInsets.zero,
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Center(
-                        child: SingleChildScrollView(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              CircleAvatar(
-                                radius: 28,
-                                backgroundColor: theme.colorScheme.primary,
-                                foregroundColor: theme.colorScheme.onPrimary,
-                                child: Text(
-                                  '${i + 1}',
-                                  style: const TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold),
-                                ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final pageView = PageView.builder(
+              controller: _pageCtrl,
+              itemCount: steps.length,
+              onPageChanged: (i) => setState(() => _index = i),
+              itemBuilder: (context, i) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Card(
+                  margin: EdgeInsets.zero,
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Center(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CircleAvatar(
+                              radius: 28,
+                              backgroundColor: theme.colorScheme.primary,
+                              foregroundColor: theme.colorScheme.onPrimary,
+                              child: Text(
+                                '${i + 1}',
+                                style: const TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold),
                               ),
-                              const SizedBox(height: 20),
-                              Text(
-                                steps[i].get(s.lang),
-                                textAlign: TextAlign.center,
-                                style: theme.textTheme.titleLarge,
-                              ),
-                            ],
-                          ),
+                            ),
+                            const SizedBox(height: 20),
+                            Text(
+                              steps[i].get(s.lang),
+                              textAlign: TextAlign.center,
+                              style: theme.textTheme.titleLarge,
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-            Padding(
+            );
+
+            final timerCard = Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
               child: Card(
                 margin: EdgeInsets.zero,
@@ -184,9 +178,14 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
                             icon: const Icon(Icons.remove),
                             onPressed: _running ? null : () => _adjust(-1),
                           ),
-                          Text(
-                            _format(_remaining),
-                            style: theme.textTheme.displaySmall,
+                          Flexible(
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                _format(_remaining),
+                                style: theme.textTheme.displaySmall,
+                              ),
+                            ),
                           ),
                           IconButton(
                             icon: const Icon(Icons.add),
@@ -194,16 +193,18 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
                           ),
                         ],
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 12,
+                        runSpacing: 8,
                         children: [
                           FilledButton.icon(
-                            icon: Icon(_running ? Icons.pause : Icons.play_arrow),
+                            icon: Icon(
+                                _running ? Icons.pause : Icons.play_arrow),
                             label: Text(
                                 _running ? s.t('pause') : s.t('start')),
                             onPressed: _toggleTimer,
                           ),
-                          const SizedBox(width: 12),
                           OutlinedButton.icon(
                             icon: const Icon(Icons.replay),
                             label: Text(s.t('reset')),
@@ -215,8 +216,9 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
                   ),
                 ),
               ),
-            ),
-            Padding(
+            );
+
+            final navButtons = Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
@@ -247,8 +249,46 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
                   ),
                 ],
               ),
-            ),
-          ],
+            );
+
+            final isCompactHeight = constraints.maxHeight < 460;
+            if (isCompactHeight) {
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    LinearProgressIndicator(
+                        value: (_index + 1) / steps.length),
+                    Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Text(
+                        s.f('step_of', [_index + 1, steps.length]),
+                        style: theme.textTheme.titleMedium,
+                      ),
+                    ),
+                    SizedBox(height: 220, child: pageView),
+                    timerCard,
+                    navButtons,
+                  ],
+                ),
+              );
+            }
+
+            return Column(
+              children: [
+                LinearProgressIndicator(value: (_index + 1) / steps.length),
+                Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Text(
+                    s.f('step_of', [_index + 1, steps.length]),
+                    style: theme.textTheme.titleMedium,
+                  ),
+                ),
+                Expanded(child: pageView),
+                timerCard,
+                navButtons,
+              ],
+            );
+          },
         ),
       ),
     );
