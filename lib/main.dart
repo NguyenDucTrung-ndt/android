@@ -55,13 +55,65 @@ class _RecipeAppState extends State<RecipeApp> {
 }
 
 ThemeData _buildTheme(Brightness brightness) {
+  final isDark = brightness == Brightness.dark;
+  const seed = Color(0xFFEF6C00);
+  final scheme = ColorScheme.fromSeed(
+    seedColor: seed,
+    brightness: brightness,
+    surface: isDark ? const Color(0xFF1A1614) : const Color(0xFFFDF8F3),
+  );
   return ThemeData(
     useMaterial3: true,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: const Color(0xFFE65100),
-      brightness: brightness,
+    colorScheme: scheme,
+    scaffoldBackgroundColor:
+        isDark ? const Color(0xFF171311) : const Color(0xFFFDF8F3),
+    appBarTheme: AppBarTheme(
+      centerTitle: false,
+      backgroundColor:
+          isDark ? const Color(0xFF171311) : const Color(0xFFFDF8F3),
+      surfaceTintColor: Colors.transparent,
     ),
-    appBarTheme: const AppBarTheme(centerTitle: false),
+    cardTheme: CardThemeData(
+      color: isDark ? const Color(0xFF241E1B) : Colors.white,
+      elevation: 0,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+        side: BorderSide(
+          color: isDark ? const Color(0xFF382F29) : const Color(0xFFEFE4D9),
+        ),
+      ),
+    ),
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: isDark ? const Color(0xFF211C19) : Colors.white,
+      surfaceTintColor: Colors.transparent,
+      indicatorColor: isDark
+          ? const Color(0xFFEF6C00).withValues(alpha: 0.22)
+          : const Color(0xFFFFEDE0),
+      iconTheme: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return const IconThemeData(color: Color(0xFFE65100), size: 24);
+        }
+        return IconThemeData(
+          color: isDark ? const Color(0xFFB5A99F) : const Color(0xFF6D5E55),
+          size: 24,
+        );
+      }),
+      labelTextStyle: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFFE65100),
+          );
+        }
+        return TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+          color: isDark ? const Color(0xFFB5A99F) : const Color(0xFF6D5E55),
+        );
+      }),
+    ),
   );
 }
 

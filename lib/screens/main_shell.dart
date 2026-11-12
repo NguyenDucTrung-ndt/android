@@ -4,7 +4,7 @@ import '../app_state.dart';
 import '../l10n/strings.dart';
 import 'favorites_screen.dart';
 import 'home_screen.dart';
-import 'settings_screen.dart';
+import 'profile_screen.dart';
 import 'shopping_screen.dart';
 
 /// Khung chính của ứng dụng với thanh điều hướng dưới (4 tab).
@@ -25,46 +25,61 @@ class _MainShellState extends State<MainShell> {
     return Scaffold(
       body: IndexedStack(
         index: _index,
-        children: const [
-          HomeScreen(),
-          FavoritesScreen(),
-          ShoppingScreen(),
-          SettingsScreen(),
+        children: [
+          const HomeScreen(),
+          const FavoritesScreen(),
+          const ShoppingScreen(),
+          ProfileScreen(
+            onOpenHome: () => setState(() => _index = 0),
+            onOpenFavorites: () => setState(() => _index = 1),
+          ),
         ],
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _index,
-        onDestinationSelected: (i) => setState(() => _index = i),
-        destinations: [
-          NavigationDestination(
-            icon: const Icon(Icons.menu_book_outlined),
-            selectedIcon: const Icon(Icons.menu_book),
-            label: s.t('nav_home'),
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.favorite_border),
-            selectedIcon: const Icon(Icons.favorite),
-            label: s.t('nav_favorites'),
-          ),
-          NavigationDestination(
-            icon: Badge(
-              label: Text('$pending'),
-              isLabelVisible: pending > 0,
-              child: const Icon(Icons.shopping_basket_outlined),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            top: BorderSide(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? const Color(0xFF382F29)
+                  : const Color(0xFFEDE2D8),
             ),
-            selectedIcon: Badge(
-              label: Text('$pending'),
-              isLabelVisible: pending > 0,
-              child: const Icon(Icons.shopping_basket),
+          ),
+        ),
+        child: NavigationBar(
+          height: 68,
+          selectedIndex: _index,
+          onDestinationSelected: (i) => setState(() => _index = i),
+          destinations: [
+            NavigationDestination(
+              icon: const Icon(Icons.home_outlined),
+              selectedIcon: const Icon(Icons.home_rounded),
+              label: s.t('nav_home'),
             ),
-            label: s.t('nav_shopping'),
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.settings_outlined),
-            selectedIcon: const Icon(Icons.settings),
-            label: s.t('nav_settings'),
-          ),
-        ],
+            NavigationDestination(
+              icon: const Icon(Icons.bookmark_border_rounded),
+              selectedIcon: const Icon(Icons.bookmark_rounded),
+              label: s.t('nav_favorites'),
+            ),
+            NavigationDestination(
+              icon: Badge(
+                label: Text('$pending'),
+                isLabelVisible: pending > 0,
+                child: const Icon(Icons.shopping_basket_outlined),
+              ),
+              selectedIcon: Badge(
+                label: Text('$pending'),
+                isLabelVisible: pending > 0,
+                child: const Icon(Icons.shopping_basket),
+              ),
+              label: s.t('nav_shopping'),
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.person_outline_rounded),
+              selectedIcon: const Icon(Icons.person_rounded),
+              label: s.t('nav_profile'),
+            ),
+          ],
+        ),
       ),
     );
   }

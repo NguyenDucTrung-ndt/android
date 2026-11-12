@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../app_state.dart';
 import '../l10n/strings.dart';
+import '../models.dart';
 import '../widgets/common.dart';
 
-/// Danh sách đi chợ: tick đã mua, vuốt để xóa, thêm tay.
+/// Danh sách đi chợ: tick đã mua, vuốt để xóa, thêm tay kèm định lượng.
 class ShoppingScreen extends StatefulWidget {
   const ShoppingScreen({super.key});
 
@@ -13,17 +14,57 @@ class ShoppingScreen extends StatefulWidget {
 }
 
 class _ShoppingScreenState extends State<ShoppingScreen> {
+  static const List<Bi> _unitPresets = [
+    Bi('quả', 'pcs'),
+    Bi('cái', 'pcs'),
+    Bi('g', 'g'),
+    Bi('kg', 'kg'),
+    Bi('ml', 'ml'),
+    Bi('lít', 'L'),
+    Bi('củ', 'pc'),
+    Bi('bó', 'bunch'),
+    Bi('hộp', 'box'),
+    Bi('gói', 'pack'),
+    Bi('chai', 'bottle'),
+    Bi('muỗng canh', 'tbsp'),
+    Bi('muỗng cà phê', 'tsp'),
+  ];
+
   final TextEditingController _ctrl = TextEditingController();
+  final TextEditingController _amountCtrl = TextEditingController();
+  final TextEditingController _unitCtrl = TextEditingController();
+  Bi? _selectedPresetUnit;
 
   @override
   void dispose() {
     _ctrl.dispose();
+    _amountCtrl.dispose();
+    _unitCtrl.dispose();
     super.dispose();
   }
 
-  void _submit(AppState state) {
-    state.addManualShopping(_ctrl.text);
+  void _submit(AppState state, String lang) {
+    if (_ctrl.text.trim().isEmpty) return;
+    final rawUnit = _unitCtrl.text.trim();
+    final Bi? unit;
+    if (_selectedPresetUnit != null &&
+        _selectedPresetUnit!.get(lang) == rawUnit) {
+      unit = _selectedPresetUnit;
+    } else if (rawUnit.isNotEmpty) {
+      unit = Bi.same(rawUnit);
+    } else {
+      unit = null;
+    }
+
+    state.addManualShopping(
+      _ctrl.text,
+      amount: _amountCtrl.text,
+      unit: unit,
+    );
     _ctrl.clear();
+    _amountCtrl.clear();
+    _unitCtrl.clear();
+    _selectedPresetUnit = null;
   }
 
   @override
@@ -104,28 +145,99 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                     },
                   ),
           ),
+          const Divider(height: 1),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
-            child: Row(
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(
-                  child: TextField(
-                    controller: _ctrl,
-                    textInputAction: TextInputAction.done,
-                    onSubmitted: (_) => _submit(state),
-                    decoration: InputDecoration(
-                      hintText: s.t('shopping_add_hint'),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(28),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _ctrl,
+                        textInputAction: TextInputAction.done,
+                        onSubmitted: (_) => _submit(state, s.lang),
+                        decoration: InputDecoration(
+                          hintText: s.t('shopping_add_hint'),
+                          isDense: true,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(28),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                        ),
                       ),
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 16),
                     ),
-                  ),
+                    const SizedBox(width: 8),
+                    IconButton.filled(
+                      icon: const Icon(Icons.add),
+                      onPressed: () => _submit(state, s.lang),
+                    ),
+                  ],
                 ),
-                IconButton.filled(
-                  icon: const Icon(Icons.add),
-                  onPressed: () => _submit(state),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 104,
+                      child: TextField(
+                        controller: _amountCtrl,
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        textInputAction: TextInputAction.next,
+                        onSubmitted: (_) => _submit(state, s.lang),
+                        decoration: InputDecoration(
+                          hintText: s.t('shopping_amount_hint'),
+                          isDense: true,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 10,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: TextField(
+                        controller: _unitCtrl,
+                        textInputAction: TextInputAction.done,
+                        onChanged: (_) => _selectedPresetUnit = null,
+                        onSubmitted: (_) => _submit(state, s.lang),
+                        decoration: InputDecoration(
+                          hintText: s.t('shopping_unit_hint'),
+                          isDense: true,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          contentPadding: const EdgeInsets.fromLTRB(14, 10, 4, 10),
+                          suffixIcon: PopupMenuButton<Bi>(
+                            tooltip: s.t('unit'),
+                            icon: const Icon(Icons.arrow_drop_down),
+                            onSelected: (unit) {
+                              setState(() {
+                                _selectedPresetUnit = unit;
+                                _unitCtrl.text = unit.get(s.lang);
+                              });
+                            },
+                            itemBuilder: (_) => [
+                              for (final unit in _unitPresets)
+                                PopupMenuItem<Bi>(
+                                  value: unit,
+                                  child: Text(unit.get(s.lang)),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

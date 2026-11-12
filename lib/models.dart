@@ -3,6 +3,9 @@
 /// Phân loại món ăn.
 enum Category { main, soup, appetizer, dessert, drink }
 
+/// Phân loại theo quốc gia / khu vực ẩm thực.
+enum Cuisine { vietnamese, italian, european, japanese, korean, thai, other }
+
 /// Độ khó của công thức.
 enum Difficulty { easy, medium, hard }
 
@@ -38,6 +41,7 @@ class Recipe {
     required this.description,
     required this.emoji,
     required this.category,
+    this.cuisine = Cuisine.vietnamese,
     required this.difficulty,
     required this.minutes,
     required this.servings,
@@ -52,6 +56,7 @@ class Recipe {
   final Bi description;
   final String emoji;
   final Category category;
+  final Cuisine cuisine;
   final Difficulty difficulty;
   final int minutes;
   final int servings;
@@ -96,6 +101,19 @@ const Map<String, String> _vietnameseGroups = {
   'y': 'ỳýỵỷỹ',
   'd': 'đ',
 };
+
+/// Một bộ lọc nhanh theo nhóm nguyên liệu.
+class IngredientPreset {
+  const IngredientPreset({
+    required this.id,
+    required this.label,
+    required this.terms,
+  });
+
+  final String id;
+  final Bi label;
+  final List<String> terms;
+}
 
 /// Chuẩn hóa chuỗi để tìm kiếm: chữ thường, bỏ dấu tiếng Việt.
 String normalizeText(String input) {

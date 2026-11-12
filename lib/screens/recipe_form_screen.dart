@@ -47,6 +47,7 @@ class _RecipeFormScreenState extends State<RecipeFormScreen> {
 
   String _emoji = '🍲';
   Category _category = Category.main;
+  Cuisine _cuisine = Cuisine.vietnamese;
   Difficulty _difficulty = Difficulty.easy;
   double _minutes = 30;
   int _servings = 2;
@@ -70,6 +71,7 @@ class _RecipeFormScreenState extends State<RecipeFormScreen> {
     _desc.text = r.description.get(lang);
     _emoji = r.emoji;
     _category = r.category;
+    _cuisine = r.cuisine;
     _difficulty = r.difficulty;
     _minutes = r.minutes.toDouble().clamp(5, 240).toDouble();
     _servings = r.servings;
@@ -143,6 +145,7 @@ class _RecipeFormScreenState extends State<RecipeFormScreen> {
       description: Bi.same(_desc.text.trim()),
       emoji: _emoji,
       category: _category,
+      cuisine: _cuisine,
       difficulty: _difficulty,
       minutes: _minutes.round(),
       servings: _servings,
@@ -233,6 +236,19 @@ class _RecipeFormScreenState extends State<RecipeFormScreen> {
                     label: Text(s.category(c)),
                     selected: _category == c,
                     onSelected: (_) => setState(() => _category = c),
+                  ),
+              ],
+            ),
+            SectionTitle(s.t('field_cuisine')),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final c in Cuisine.values)
+                  ChoiceChip(
+                    label: Text(s.cuisine(c)),
+                    selected: _cuisine == c,
+                    onSelected: (_) => setState(() => _cuisine = c),
                   ),
               ],
             ),
